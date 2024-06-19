@@ -1,7 +1,7 @@
 # Prophage-Identification
 Prophage Identification workflow for 154 ST131 E. coli Genomes DOI: 10.1101/2023.12.11.571174
 
-# Workflow for identifying and comparing prophage sequences from bacterial genomes using Phastest (https://phastest.ca/databases) using Linux machine and shell scripts
+# Workflow for identifying and comparing prophage sequences from bacterial genomes using Phastest (https://phastest.ca/databases) and shell scripts on a Linux Machine
 
 # Step 1: Installation
 Install phastest on machine using intructions detailed here: https://phastest.ca/databases
