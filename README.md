@@ -12,28 +12,28 @@ Move all assemblies to screen to ~/slurm-docker-cluster/phastest_inputs
 # Step 3: Running phastest
 Navigate to ~/phastest_inputs on command line and run phastest on assemblies with flags for phage annotation only to decrease computation time. Below is an example of the command. If running on multiple assemblies, create a bash script based on the command below, replacing the assembly ID
 
-% docker compose run phastest -i fasta -s DVT1282.fasta --yes --phage-only -m lite
+    % docker compose run phastest -i fasta -s DVT1282.fasta --yes --phage-only -m lite
 
-Note: If running phastest on multiple assemblies on a linux machine, you may need to bypass sudo authorization or you will have to input your password for each genome screen. To bypass sudo, follow these directions: https://askubuntu.com/questions/477551/how-can-i-use-docker-without-sudo
+    Note: If running phastest on multiple assemblies on a linux machine, you may need to bypass     sudo authorization or you will have to input your password for each genome screen. To           bypass sudo, follow these directions: https://askubuntu.com/questions/477551/how-can-i-use-     docker-without-sudo)
 
 # Step 4: Prefixing unlabeled results
 Phastest output for each assembly will be in ~/slurm-docker-cluster/phastest-app-docker/JOBS. For this analysis, the region_DNA.txt and summary.txt contain the nucleotide sequences and genomic information of the prophages identified in the assemblies, respectively. Below are details on these files. You will notice that these files are not prefixed with the assembly ID, therefore if we concantenate them you cannot disentagle the results. To add a prefix to these files based on assembly id, navigate to ~/JOBS (where the phastest outputs are) and run the shell script "rename_files.sh"
-% sh rename_files.sh 
+    % sh rename_files.sh 
 
 Note: region_DNA.txt contain the nucleotide sequences of each prophage identified in that assembly by Phastest. The prophages are separated by ">" and the numbering correspondes to the numbers found in "Main" column in the summary.txt file. The summary.txt file contains additional data on the prophage such as, length, corrdinates in genome, GC%, completeness, and phage will the most common hit. These are the two files used for this analysis. 
 
 # Step 5: Separating out results
 Now that the output files are prefixed, move the region_DNA.txt files and summary.txt files into separate folders:
-% mkdir DNA_regions
-% cp */*DNA* DNA_regions
-% mkdir summary_files
-% cp */*summary* summary_files
+    % mkdir DNA_regions
+    % cp */*DNA* DNA_regions
+    % mkdir summary_files
+    % cp */*summary* summary_files
 
 # Step 6: Cleaning DNA_region file names
 Navigate to ~/DNA_regions. This folder should hold all prophage nucleotide sequences for each assembly screened. In order to perform an all x all blast to assess genetic similarity, we need to make sure the prophages in each assembly are accurately named. First, we will clean the file names so they are only named by the assembly ID. The command below will remove all text after and including the underscore from the file names. For example: DVT1282_regions_DNA.txt will become DVT1282.txt. Once this is done, we want to change these .txt files to .fasta files for the blast anlysis.
-% find . -type f -name '*_*.*' -exec bash -c 'newname="$(basename "$0" | sed "s/_.*\(\.[^.]*\)$/\1/")"; mv "$0" "$(dirname "$0")/$newname"' {} \;
+    % find . -type f -name '*_*.*' -exec bash -c 'newname="$(basename "$0" | sed "s/_.*\(\.[^.]*\)$/\1/")"; mv "$0" "$(dirname "$0")/$newname"' {} \;
 
-% find . -type f -name '*.txt' -exec bash -c 'mv "$0" "${0%.txt}.fasta"' {} \;
+    % find . -type f -name '*.txt' -exec bash -c 'mv "$0" "${0%.txt}.fasta"' {} \;
 
 # Step 7: Prefixing prophages with assembly ID
 If you open a region_DNA.txt file, you will notice that the lines all start with > followed by a number corresponding to the prophage identified in that assembly and the corrdinates of the prophage on that contig, for example >1   2000-50000. The prophage number and genome corrdinates are separated by a tab and a space. In order to perform an all x all blast, we need to first prefix the prophages in each region_DNA.txt file with the respective assembly ID and replace the tab and space with an underscore. If this is not done, blast.py will not be able to correctly parse the prophage IDs.   
