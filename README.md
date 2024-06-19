@@ -33,9 +33,11 @@ Now that the output files are prefixed, move the region_DNA.txt files and summar
 
 # Step 6: Cleaning DNA_region file names
 Navigate to ~/DNA_regions. This folder should hold all prophage nucleotide sequences for each assembly screened. In order to perform an all x all blast to assess genetic similarity, we need to make sure the prophages in each assembly are accurately named. First, we will clean the file names so they are only named by the assembly ID. The command below will remove all text after and including the underscore from the file names. For example: DVT1282_regions_DNA.txt will become DVT1282.txt. Once this is done, we want to change these .txt files to .fasta files for the blast anlysis.
-   
+
+    # Remove all text after and including the underscore
     % find . -type f -name '*_*.*' -exec bash -c 'newname="$(basename "$0" | sed "s/_.*\(\.[^.]*\)$/\1/")"; mv "$0" "$(dirname "$0")/$newname"' {} \;
 
+    # Change .txt files to .fasta files
     % find . -type f -name '*.txt' -exec bash -c 'mv "$0" "${0%.txt}.fasta"' {} \;
 
 # Step 7: Prefixing prophages with assembly ID
@@ -44,10 +46,10 @@ If you open a region_DNA.txt file, you will notice that the lines all start with
     # Prefixing prophages with assembly ID run "rename_prophages.sh" shell script
     % sh rename_prophages.sh /path/to/DNA_regions
 
+    Note: make sure you are in DNA_regions directory to run the below commands 
+
     # Removing "tab" and replacing with underscore from all lines starting with >
     % find . -type f -name '*.fasta' -exec sed -i -e '/^>/ s/\t/_/g' {} \;
-    
-    Note: make sure you are in DNA_regions directory to run the above and below commands 
     
     # Remove extra space from all lines starting with >
     % find . -type f -name '*.fasta' -exec sed -i -e '/^>/ s/ //g' {} \;
